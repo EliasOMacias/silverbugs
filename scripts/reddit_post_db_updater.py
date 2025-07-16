@@ -1,4 +1,4 @@
-import psycopg
+import psycopg[binary]
 import praw
 from datetime import datetime
 
