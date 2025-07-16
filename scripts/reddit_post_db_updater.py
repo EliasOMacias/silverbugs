@@ -43,10 +43,10 @@ for post in new_posts:
 
 
 with psycopg.connect(
-    dbname="silverbugs",
-    user="silver_bug",
-    password="Th1s1s4p0stgresql",
-    host="localhost", 
+    dbname="silverbugs_db",
+    user="elias_m",
+    password="KSefPQeAhZJZM2x7jTdDHFT8i2gwGcnC",
+    host="dpg-d1rfk1emcj7s73e3689g-a.oregon-postgres.render.com", 
     port=5432
 ) as conn:
 
