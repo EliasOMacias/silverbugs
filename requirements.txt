@@ -1,0 +1,5 @@
+psycopg[binary]
+numpy
+pandas
+sqlalchemy
+datetime
