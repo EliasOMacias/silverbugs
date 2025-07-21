@@ -21,28 +21,19 @@ reddit_creds = praw.Reddit(client_id='GemgQF90kR7V1F75su4t7g',
 
 subreddit = reddit_creds.subreddit('Pmsforsale')
 
-def extract_label(title):
-    lowered = title.lower()
-    if 'wts' in lowered:
-        return "WTS"
-    elif 'wtb' in lowered:
-        return 'WTB'
-    else:
-        return "other"
+
 
 new_posts = []
 for post in subreddit.new(limit=999):
     if post.created_utc > last_timestamp-30000:
-        label = extract_label(post.title)
         new_posts.append({
             'id': post.id,
             'title': post.title,
-            'labe': label
             'created_utc': post.created_utc,
             'score': post.score,
             'num_comments': post.num_comments,
             'url': post.url,
-            'selftext': post.selftext
+            'selftext': post.selftext,
         })
 
 print(f"Collected {len(new_posts)} posts")
