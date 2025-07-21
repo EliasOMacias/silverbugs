@@ -37,6 +37,7 @@ for post in subreddit.new(limit=999):
         new_posts.append({
             'id': post.id,
             'title': post.title,
+            'labe': label
             'created_utc': post.created_utc,
             'score': post.score,
             'num_comments': post.num_comments,
