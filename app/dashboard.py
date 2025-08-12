@@ -9,6 +9,16 @@ from datetime import date, datetime, timedelta, timezone
 import plotly.graph_objects as go
 
 
+def conn():
+    return psycopg2.connect(
+        dbname="silverbugs_db",
+        user="elias_m",
+        password="KSefPQeAhZJZM2x7jTdDHFT8i2gwGcnC",  # Replace with your actual password
+        host="dpg-d1rfk1emcj7s73e3689g-a.oregon-postgres.render.com",
+        port=5432
+    )
+
+
 st.title("📊 Interactive EDA App with Yahoo Finance")
 
 
@@ -38,7 +48,7 @@ show_gold = st.sidebar.checkbox("Gold", value=True)
 show_sp500 = st.sidebar.checkbox("S&P 500", value=True)
 
 
-st.subheader("Current Price - 24h Change")
+st.subheader("24h Performance")
 
 assets = ["SI=F","GC=F","^GSPC"]
 
@@ -130,7 +140,7 @@ if len(perf_assets) > 0 and not filtered_data.empty:
         pct_change = (abs_change / first_val) * 100
         cols[idx].metric(
             label=asset,
-            value=f"${abs_change:.2f}",
+            value=f"${last_value:.2f}",
             delta=f"{abs_change:+.2f} ({pct_change:+.2f}%)"
         )
 else:
