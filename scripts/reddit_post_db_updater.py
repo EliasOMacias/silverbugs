@@ -1,5 +1,6 @@
 import psycopg
 import praw
+import re
 from datetime import datetime
 
 with psycopg.connect(dbname="silverbugs_db",
@@ -43,6 +44,23 @@ for post in new_posts:
     post["created_utc"] = datetime.utcfromtimestamp(post["created_utc"])
 
 
+# Define regex patterns and keywords for labeling spot and silver related posts
+spot_pattern = re.compile(r'\b(under|below|at|@)\s+(melt|spot)\b', re.IGNORECASE)
+silver_keywords = ['silver','libertad', 'slv', 'ag', 'benjies', 'asw', '90 percent', '90%', 'dime','dimes', 'quarter','quarters','barber','barbers','junk', 'silver eagles', 
+                   'constitutional', 'liberties', 'walkers', 'mercs', 'mercuries', 'franklins', 
+                   'washingtons', 'washies', '.900', 'ASE', 'ASEs', 'roosevelts']
+silver_pattern = re.compile(r'\b(?:' + '|'.join(re.escape(word) for word in silver_keywords) + r')\b', re.IGNORECASE)
+
+#labels silver related posts
+def label_silver_posts(text):
+    return 1 if silver_pattern.search(text) else 0
+
+#labels silver related spot deals
+def label_spot_deal(text, silver_label):
+    return 1 if silver_label == 1 and spot_pattern.search(text) else 0
+
+
+
 with psycopg.connect(
     dbname="silverbugs_db",
     user="elias_m",
@@ -54,13 +72,19 @@ with psycopg.connect(
 
     with conn.cursor() as cur:
         insert_query = """
-        INSERT INTO post_data (id, url, title, selftext, created_utc, num_comments, score, label)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO post_data (id, url, title, selftext, created_utc, num_comments, score, label, spot_deal,silver_post)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO NOTHING;
         """
     
         for post in new_posts:
+            # labels posts as WTS or WTB
             label = 'WTS' if '[WTS]' in post['title'].upper() else 'WTB' if '[WTB]' in post['title'].upper() else None
+            #combines title and text for silver and spot leable regex 
+            title_text = f"{post['title'] or ''} {post['selftext'] or ''}"
+            silver_post = label_silver_posts(title_text)
+            spot_deal = label_spot_deal(title_text,silver_post)
+
             cur.execute(
                 insert_query,
                 (
@@ -71,7 +95,9 @@ with psycopg.connect(
                     post["created_utc"],
                     post["num_comments"],
                     post["score"],
-                    label
+                    label,
+                    spot_deal,
+                    silver_post
                 )
             )
 
