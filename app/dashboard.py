@@ -38,7 +38,7 @@ show_gold = st.sidebar.checkbox("Gold", value=True)
 show_sp500 = st.sidebar.checkbox("S&P 500", value=True)
 
 
-st.subheader("Current Price - 1D Change")
+st.subheader("Current Price - 24h Change")
 
 assets = ["SI=F","GC=F","^GSPC"]
 
@@ -130,7 +130,7 @@ if len(perf_assets) > 0 and not filtered_data.empty:
         pct_change = (abs_change / first_val) * 100
         cols[idx].metric(
             label=asset,
-            value=f"${last_val:.2f}",
+            value=f"${abs_change:.2f}",
             delta=f"{abs_change:+.2f} ({pct_change:+.2f}%)"
         )
 else:
@@ -181,28 +181,3 @@ st.plotly_chart(fig, use_container_width=True)
 fig = go.Figure()
 
 
-st.subheader("Make a better model! (experts only)")
-
-
-
-"""
-if show_silver:
-    fig.add_trace(go.Scatter(x=filtered_data.index, y=filtered_data["SI=F"],
-                             name="Silver", yaxis = 'y1', line=dict(color='silver')))
-if show_gold:
-    fig.add_trace(go.Scatter(x=filtered_data.index, y=filtered_data["GC=F"],
-                             name="Gold", yaxis = 'y2',  line=dict(color='gold')))
-if show_sp500:
-    fig.add_trace(go.Scatter(x=filtered_data.index, y=filtered_data["^GSPC"],
-                             name="S&P 500", yaxis = 'y3', line=dict(color='blue')))
-
-fig.update_layout(
-    title="Asset Price Comparison",
-    xaxis_title="Date",
-    yaxis_title="Price",
-    template="plotly_white",
-    hovermode="x unified"
-)
-
-st.plotly_chart(fig, use_container_width=True)
-"""
