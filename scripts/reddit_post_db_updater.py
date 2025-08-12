@@ -54,12 +54,13 @@ with psycopg.connect(
 
     with conn.cursor() as cur:
         insert_query = """
-        INSERT INTO post_data (id, url, title, selftext, created_utc, num_comments, score)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO post_data (id, url, title, selftext, created_utc, num_comments, score, label)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (id) DO NOTHING;
         """
     
         for post in new_posts:
+            label = 'WTS' if '[WTS]' in post['title'].upper() else 'WTB' if '[WTB]' in post['title'].upper() else None
             cur.execute(
                 insert_query,
                 (
@@ -69,7 +70,8 @@ with psycopg.connect(
                     post["selftext"],
                     post["created_utc"],
                     post["num_comments"],
-                    post["score"]
+                    post["score"],
+                    label
                 )
             )
 
